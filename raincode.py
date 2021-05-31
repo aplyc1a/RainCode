@@ -5,60 +5,39 @@
 # @FileName: raincode.py
 import optparse
 import json
-import pprint
+import re
 
 class human:
     name=[]
     birth=[]
     phone=[]
     sfz=[]
+    qq=[]
     splitcode=[]
+    word=[]
     filling=[]
     common=[]
-    highrisk_dic={}
+    number=[]
 
     def __init__(self, configuration_file):
         self.set_information(configuration_file)
         
     def set_feature(self, data):
-        for i in data['name'].keys():
-            if data['name'][i]:
-                self.name.append(data['name'][i])
-
-        for i in data['birth'].keys():
-            if data['birth'][i]:
-                self.birth.append(data['birth'][i])
-                
-        for i in data['phone'].keys():
-            if data['phone'][i]:
-                self.phone.append(data['phone'][i])
-
-        for i in data['sfz'].keys():
-            if data['sfz'][i]:
-                self.sfz.append(data['sfz'][i])
-
-        for i in data['splitcode'].keys():
-            if data['splitcode'][i]:
-                self.splitcode.append(data['splitcode'][i])
-
-        for i in data['filling'].keys():
-            if data['filling'][i]:
-                self.filling.append(data['filling'][i])
-
-        for i in data['common'].keys():
-            if data['common'][i]:
-                self.common.append(data['common'][i])
+        l=['name','birth','phone','sfz','qq','splitcode','word','filling','number']
+        for i in l:
+            for j in data[i].keys():
+                if data[i][j]:
+                    self.get_feature_by_name(i).append(data[i][j])
 
     def set_information(self, config_file):
         try:
             f = open(config_file, "r")
             data = json.load(f)
-        except:
-            print("[Error] 配置文件加载失败")
+        except Exception as e:
+            print("[Error] 配置文件加载失败.%s" %e)
             exit(0)
 
         self.set_feature(data)
-        #print(self.name)
     def get_feature_by_name(self, feature_name):
         return getattr(self,feature_name)
 
@@ -69,9 +48,15 @@ def raindrops(units,cursor,model):
         else :
             print(model)
         return
-    for j in man.get_feature_by_name(units[cursor]):
-        #print(model.replace('%'+units[cursor]+'%',j))
-        raindrops(units,cursor+1,model.replace('%'+units[cursor]+'%',j))
+        
+    if units[cursor]=='number':
+        for j in man.get_feature_by_name(units[cursor]):
+            a,b= j.split('-')
+            for k in range(int(a),int(b)+1):
+                raindrops(units,cursor+1,model.replace('%<'+units[cursor]+'>%',str(k),1))
+    else :
+        for j in man.get_feature_by_name(units[cursor]):
+            raindrops(units,cursor+1,model.replace('%<'+units[cursor]+'>%',j,1))
 
 if __name__ == '__main__':
     parser = optparse.OptionParser('')
@@ -79,8 +64,6 @@ if __name__ == '__main__':
     parser.add_option('-m', '--model', dest = 'template_file', type = 'string', default="model/big.model", help = '加载模板文件')
     parser.add_option('-o', '--output', dest = 'output_file', type = 'string', help = '输出文件')
     parser.add_option('-i', '--import', dest = 'import_btn', action="store_true", default=False, help = '加载自定义弱口令字典')
-    parser.add_option('-s', '--smart', dest = 'smart_btn', action="store_true", default=False, help = '智能模式，@todo')
-    parser.add_option('-a', '--all', dest = 'all_btn', action="store_true", default=False, help = '全量模式，@todo')
     parser.add_option('-e', '--evolving', dest = 'fuzz_btn', action="store_true", default=False, help = '变异模式，@todo')
     parser.add_option('-v', '--verbose', dest="verbose", action="store_true", default=False, help="详细模式")
     (options,args) = parser.parse_args()
@@ -102,12 +85,13 @@ if __name__ == '__main__':
                 print(i.strip('\r').strip('\n'))
         fp_common.close()
 
-    for model in fp_tmplt.readlines():# 不同的模型
+    for model in fp_tmplt.readlines():
         model = model.strip('\r').strip('\n')
+        if options.verbose:
+            print("[Debug] model:",model)
         v = model
-        u = [i for i in model.split('%') if i !='']
-        u = list(set(u)) # u表示所有待替换的特征名
-        # man.get_feature_by_name(u) #表示对应特征的所有可能的值
+        p = re.compile(r'\%\<(\w+)\>\%')
+        u = p.findall(model)
         i = 0
         raindrops(u,i,v)
 

@@ -18,7 +18,12 @@
 
 **factory**：存储可用于提取模型文件的原材料。这部分源于https://github.com/aplyc1a/toolkits/tree/master/0x00.%E5%AD%97%E5%85%B8%E6%96%87%E4%BB%B6/%E5%AD%97%E5%85%B8%E5%B7%A5%E5%8E%82
 
-**model**：存储用于生成字典的核心模型文件。
+**model**：存储用于生成字典的核心模型文件。model目录下预置了两个可用模型：
+
+```text
+big.model(全量模型)
+smart.model(经典模型)
+```
 
 **config.json**：配置文件，需要使用前填入收集到的目标的个人信息。不知道的可以留空或删除。
 
@@ -35,8 +40,6 @@ python3 raincode.py -h
 【可选参数】
 -h/--help        帮助
 -o/--output      输出文件名。（缺省时标准输出）
-#-s/--smart       智能模式。@todo，支持更有针对性的字典生成，可能会更慢。
-#-a/--all         全量模式。尽可能的给出所有的密码。
 #-e/--evolving    fuzz模式。对部分字符做变异操作。
 -i/--import      导入通用弱口令。默认导入通用高频密码（db/common.txt）
 ```
