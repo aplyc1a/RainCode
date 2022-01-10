@@ -89,9 +89,9 @@ python3 db2json.py -i chinesename-l3.txt -n name > 1.json
 
 | 名称                       | 作用                 |
 | -------------------------- | -------------------- |
-| chinese-password.txt       | 国内高频弱口令       |
-| english-password.txt       | 国外高频弱口令(暂缺) |
-| linux-account.txt          | linux常见用户        |
+| chinese-password.txt       | 国内高频弱口令(595)  |
+| english-password.txt       | 国外高频弱口令(100k) |
+| linux-account.txt          | Linux常见用户        |
 | backend-account.txt        | 后台常见用户         |
 | backend-password.txt       | 后台常见弱口令       |
 | backend-sqlinject-user.txt | 后台常见万能账户     |
